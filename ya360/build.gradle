@@ -1,56 +1,12 @@
 plugins {
-    id 'java-library'
-}
-
-group = 'org.luwrain.io.api'
-version = '0.1.0'
-
-repositories {
-    mavenCentral()
+id 'java-library'
+id 'io.freefair.lombok' version '8.6'
 }
 
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.google.code.gson:gson:2.11.0'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  implementation libraries.base
+  annotationProcessor libraries.autoService
+  testImplementation libraries.junit
+  testImplementation 'org.mockito:mockito-core:5.11.0'
+  testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 }
-
-  tasks.withType(JavaCompile) {
-    sourceCompatibility = '17'
-    targetCompatibility = '17'
-  }
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
-    tasks.withType(Test).configureEach {
-        afterTest { descriptor, result ->
-            if (result.resultType == TestResult.ResultType.FAILURE)
-            {
-                String testName = descriptor.displayName ?: "${descriptor.className}.${descriptor.name}"
-                logger.error("FAILED TEST: ${testName}")
-
-                Throwable exception = result.exception
-                if (exception != null)
-                {
-                    logger.error("${exception.class.simpleName}: ${exception.message}")
-
-                    StackTraceElement testFrame = exception.stackTrace.find
-                    {
-                        it.className?.startsWith('org.luwrain')
-                    }
-
-                    if (testFrame != null)
-                    {
-                        logger.error("  at ${testFrame}")
-                    }
-                }
-            }
-        }
-    }
-
-
-
